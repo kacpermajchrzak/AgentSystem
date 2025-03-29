@@ -1,6 +1,5 @@
 from model import OpinionModel
 import matplotlib.pyplot as plt
-import pandas as pd
 
 model = OpinionModel(num_agents=100)
 

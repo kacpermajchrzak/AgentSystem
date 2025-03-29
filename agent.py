@@ -4,7 +4,7 @@ import math
 
 class OpinionAgent(Agent):
     def __init__(self, unique_id, model, knowledge, opinion):
-        super().__init__(unique_id, model)
+        super().__init__(model)
         self.knowledge = knowledge           # ki ∈ [0, 1]
         self.opinion = opinion               # oi ∈ {-1, 0, 1}
         self.opinion_raw = 0.0               # li (information load)
@@ -17,7 +17,7 @@ class OpinionAgent(Agent):
     def step(self):
         # Share message if involved
         if self.involvement >= self.involvement_threshold and self.opinion != 0:
-            neighbor = self.random.choice(self.model.grid.get_neighbors(self.pos, moore=True, include_center=False))
+            neighbor = self.random.choice(self.model.grid.get_neighbors(self.pos, include_center=False))
             payload = self.opinion * self.reputation
             neighbor.receive_payload(payload)
 
