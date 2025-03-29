@@ -6,10 +6,14 @@ from agent import OpinionAgent
 import numpy as np
 import matplotlib.pyplot as plt
 from graph_network import generate_graph
+from llama_test import LLM
 
 class OpinionModel(Model):
-    def __init__(self, num_agents=100, avg_degree=3):
+    def __init__(self, num_agents=100):
         super().__init__()
+        self.llm = LLM()
+        self.fake_news = "There was an earthquake in Asia this month."
+        self.fact = "There was no earthquake in Asia this month."
         self.num_agents = num_agents
         self.G = generate_graph(num_agents)
         self.grid = NetworkGrid(self.G)
@@ -25,13 +29,14 @@ class OpinionModel(Model):
         for i, node in enumerate(self.G.nodes()):
             knowledge = np.random.triangular(left=0, mode=0.05, right=1)
             opinion = 0
-            agent = OpinionAgent(self, knowledge, opinion)
+            agent = OpinionAgent(self, knowledge, opinion, self.llm, self.fake_news, self.fact)
             if i == 30:
                 agent.opinion = 1
                 agent.involvement_threshold = 0.0
                 agent.knowledge = 0.0
                 agent.has_heard = True
                 agent.opinion_raw = 1.0
+                agent.news = self.fake_news
                 node_colors.append('red')
             else:
                 node_colors.append('gold')
@@ -44,6 +49,7 @@ class OpinionModel(Model):
 
     def step(self):
         self.iteration_counter += 1
+        print(f"Iteration: {self.iteration_counter}")
         self.agents.shuffle_do('spread_step')
         self.datacollector.collect(self)
         self.agents.shuffle_do('update_step')
