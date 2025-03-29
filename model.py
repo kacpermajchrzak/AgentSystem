@@ -5,26 +5,13 @@ import networkx as nx
 from agent import OpinionAgent
 import numpy as np
 import matplotlib.pyplot as plt
+from graph_network import generate_graph
 
 class OpinionModel(Model):
     def __init__(self, num_agents=100, avg_degree=3):
         super().__init__()
-        sizes = [100, 100, 100]  # total = 300 nodes
-
-        # Define the connection probabilities:
-        # High intra-cluster connectivity (e.g. p=0.1 or higher)
-        # Low inter-cluster connectivity (e.g. p=0.01 or 10%)
-        p_intra = 0.045
-        p_inter = 0.0045  # 10% of intra
-
-        # Probability matrix: 3x3 blocks
-        probs = [
-            [p_intra, p_inter, p_inter],
-            [p_inter, p_intra, p_inter],
-            [p_inter, p_inter, p_intra]
-        ]
         self.num_agents = num_agents
-        self.G = nx.stochastic_block_model(sizes, probs)
+        self.G = generate_graph(num_agents)
         self.grid = NetworkGrid(self.G)
         self.datacollector = DataCollector(
             model_reporters={
@@ -48,8 +35,10 @@ class OpinionModel(Model):
                 node_colors.append('yellow')
 
             self.grid.place_agent(agent, node)
-        
-        nx.draw(self.G, pos=nx.spring_layout(self.G), node_color=node_colors, edge_color="lightblue", node_size=15)
+        pos = nx.spring_layout(self.G, seed=42)
+        # nx.draw(self.G, pos=nx.spring_layout(self.G, seed=42), node_color=node_colors, edge_color="lightblue", node_size=15)
+        nx.draw_networkx_nodes(self.G, pos, node_size=20, node_color='gold', alpha=0.8)
+        nx.draw_networkx_edges(self.G, pos, width=0.5, edge_color='skyblue', alpha=0.5)
         plt.show()
         num_nodes = self.G.number_of_nodes()
         num_edges = self.G.number_of_edges()
