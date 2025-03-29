@@ -4,7 +4,7 @@ import math
 import numpy as np
 
 class OpinionAgent(Agent):
-    def __init__(self, unique_id, model, knowledge, opinion):
+    def __init__(self, model, knowledge, opinion):
         super().__init__(model)
         self.knowledge = knowledge           # ki ∈ [0, 1]
         self.opinion = opinion               # oi ∈ {-1, 0, 1}
@@ -25,9 +25,8 @@ class OpinionAgent(Agent):
     def update_step(self):
         if self.has_heard:
             self.time_since_heard += 1
-            self.involvement = max(0.0, self.involvement - 0.05 * self.time_since_heard)  # Decrease by 0.05 each step
+            self.involvement = max(0.0, 1.0 - 0.05 * self.time_since_heard)
 
-        # Update opinion based on opinion_raw (li)
         self.update_opinion()
 
     def receive_payload(self, payload):
@@ -37,10 +36,14 @@ class OpinionAgent(Agent):
             self.time_since_heard = 0
 
     def update_opinion(self):
-        o_hat = 2 * (1 / (1 + math.exp(-5 * self.opinion_raw))) - 1
-        if o_hat > self.knowledge + 0.1:
-            self.opinion = 1
-        elif o_hat < self.knowledge - 0.1:
-            self.opinion = -1
-        else:
-            self.opinion = 0
+        if self.has_heard:
+            o_hat = 2 * (1 / (1 + math.exp(-5 * self.opinion_raw))) - 1
+            if o_hat > self.knowledge + 0.1:
+                self.opinion = 1
+            elif o_hat < self.knowledge - 0.1:
+                self.opinion = -1
+            else:
+                self.opinion = 0
+            
+            if self.involvement == 0.0:
+                self.opinion = 0
