@@ -52,9 +52,9 @@ class OpinionAgent(Agent):
                 return
             
             if self.knowledge > 0.5:
-                model_decision = self.llm.check_if_news_is_fake (self.news, fact=self.fact)
+                model_decision = self.llm.check_if_news_is_fake(self.news, fact=self.fact)
             else:
-                model_decision = self.llm.check_if_news_is_fake (self.news)
+                model_decision = self.llm.check_if_news_is_fake(self.news)
 
             if model_decision:
                 self.opinion = 1

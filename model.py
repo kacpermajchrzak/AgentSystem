@@ -25,6 +25,7 @@ class OpinionModel(Model):
             }
         )
         self.iteration_counter = 0
+        
         node_colors = []
         for i, node in enumerate(self.G.nodes()):
             knowledge = np.random.triangular(left=0, mode=0.05, right=1)
