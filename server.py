@@ -1,9 +1,9 @@
-import mesa
 from mesa.visualization import SolaraViz, make_plot_component, make_space_component
 from model import OpinionModel
 import solara
 from matplotlib import pyplot as plt
 from mesa.visualization.utils import update_counter
+
 @solara.component
 def HistogramComponent(model, attribute, title, bins=10):
     """
@@ -37,6 +37,21 @@ def HistogramKnowledge(model):
 @solara.component
 def HistogramCommitment(model):
     return HistogramComponent(model, "involvement_threshold", "Commitment Threshold Histogram")
+
+@solara.component
+def NetworkLegend(model):
+    """Displays a legend for the network visualization."""
+    with solara.Div(style={"padding": "10px", "border": "1px solid #ccc", "margin-top": "10px"}):
+        solara.Markdown("### Network Legend")
+        with solara.Row(style={"margin-bottom": "5px"}):
+            solara.Div(style={"width": "20px", "height": "20px", "background-color": "blue", "margin-right": "10px", "border-radius": "50%"})
+            solara.Text("Positive Opinion (P)")
+        with solara.Row( style={"margin-bottom": "5px"}):
+            solara.Div(style={"width": "20px", "height": "20px", "background-color": "orange", "margin-right": "10px", "border-radius": "50%"})
+            solara.Text("Negative Opinion (N)")
+        with solara.Row():
+            solara.Div(style={"width": "20px", "height": "20px", "background-color": "green", "margin-right": "10px", "border-radius": "50%"})
+            solara.Text("Neutral Opinion (Nu)")
 
 def agent_portrayal(agent):
     portrayal = {"size": 15,
@@ -75,7 +90,47 @@ model_params = {
         "type": "Checkbox",
         "value": False,
         "label": "Use LLM"
-    }
+    },
+    "c": {
+        "type": "SliderFloat",
+        "value": 0.05,
+        "label": "c param for knowledge distribution:",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+    },
+    "a_rep": {
+        "type": "SliderInt",
+        "value": 4,
+        "label": "a param for reputation distribution:",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+    },
+    "b_rep": {
+        "type": "SliderInt",
+        "value": 10,
+        "label": "b param for reputation distribution:",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+    },
+    "low_involv": {
+        "type": "SliderFloat",
+        "value": 0.0,
+        "label": "low param for involvement distribution:",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+    },
+    "high_involv": {
+        "type": "SliderFloat",
+        "value": 1.0,
+        "label": "high param for involvement distribution:",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+    },
 }
 
 space_viz = make_space_component(
@@ -97,15 +152,12 @@ page = SolaraViz(
     components=[
         space_viz,
         plot_opinions,
+        NetworkLegend,
         HistogramReputation,
         HistogramKnowledge,
         HistogramCommitment,
-        # You can add custom text components too:
-        # lambda m: f"Step: {m.iteration_counter} | Positive: {m.datacollector.get_model_vars_dataframe()['Positive'].iloc[-1] if m.iteration_counter > 0 else 0}"
     ],
     name="Opinion Model Visualization",
-    # agent_view=True, # If you want to inspect individual agents
-    # play_interval=500, # Milliseconds between steps when playing
 )
 
 if __name__ == "__main__":
