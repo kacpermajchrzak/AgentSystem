@@ -126,7 +126,7 @@ User: {message_to_judge} The fact is: {optional_fact}
 ```
 
 Based on the result, LLM agent sets its opinion:
-- 1 → believes it is fake
+- -1 → believes it is fake
 - 1 → believes it is true
 
 Involvement gradually decreases per timestep, eventually neutralizing once it hits zero.
