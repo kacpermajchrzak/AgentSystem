@@ -15,7 +15,7 @@ def HistogramComponent(model, attribute, title, bins=10):
         title: Title of the histogram.
         bins: Number of bins for the histogram.
     """
-    update_counter.get()  # Required to update the counter
+    update_counter.get()
     fig = plt.Figure()
     ax = fig.subplots()
     ax.set_xlim(0, 1)
@@ -70,6 +70,11 @@ model_params = {
         "min": 1,
         "max": 10,
         "step": 1,
+    },
+    "use_llm": {
+        "type": "Checkbox",
+        "value": False,
+        "label": "Use LLM"
     }
 }
 
@@ -83,7 +88,8 @@ plot_opinions = make_plot_component(
 
 
 initial_model = OpinionModel(num_agents=model_params["num_agents"]["value"],
-                             n_communities=model_params["n_communities"]["value"])
+                             n_communities=model_params["n_communities"]["value"],
+                             use_llm=model_params["use_llm"]["value"])
 
 page = SolaraViz(
     model=initial_model,

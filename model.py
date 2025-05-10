@@ -2,17 +2,22 @@ from mesa import Model
 from mesa.space import NetworkGrid
 from mesa.datacollection import DataCollector
 import networkx as nx
-from agent import OpinionAgent
+from agents.agent import OpinionAgent
+from agents.llm_agent import OpinionAgent as LLMOpinionAgent
 import numpy as np
 import matplotlib.pyplot as plt
 from graph_network import generate_graph
+from llm_config import LLM
 
 class OpinionModel(Model):
-    def __init__(self, num_agents=100, n_communities=3):
+    def __init__(self, num_agents=100, n_communities=3, use_llm=False):
         super().__init__()
         self.num_agents = num_agents
+        self.llm = LLM() if use_llm else None
         self.G = generate_graph(num_agents, m_=n_communities)
         self.grid = NetworkGrid(self.G)
+        self.fake_news = "There was an earthquake in Asia this month."
+        self.fact = "There was no earthquake in Asia this month."
         self.datacollector = DataCollector(
             model_reporters={
                 "Positive": lambda m: self.count_opinions(1),
@@ -26,18 +31,18 @@ class OpinionModel(Model):
         for i, node in enumerate(self.G.nodes()):
             knowledge = np.random.triangular(left=0, mode=0.05, right=1)
             opinion = 0
-            
-            agent = OpinionAgent(self, knowledge, opinion)
+            if use_llm:
+                agent = LLMOpinionAgent(self, knowledge, opinion, self.llm, self.fake_news, self.fact)
+            else:
+                agent = OpinionAgent(self, knowledge, opinion)
 
             if i == 30:
                 agent.opinion = 1
-                if hasattr(agent, 'involvement_threshold'):
-                    agent.involvement_threshold = 0.0
+                agent.involvement_threshold = 0.0
                 agent.knowledge = 0.0
-                if hasattr(agent, 'has_heard'):
-                    agent.has_heard = True
-                if hasattr(agent, 'opinion_raw'):
-                    agent.opinion_raw = 1.0
+                agent.has_heard = True
+                agent.opinion_raw = 1.0
+                agent.news = self.fake_news
             
             self.grid.place_agent(agent, node)
 
