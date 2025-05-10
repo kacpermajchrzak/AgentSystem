@@ -1,9 +1,9 @@
-import mesa
 from mesa.visualization import SolaraViz, make_plot_component, make_space_component
 from model import OpinionModel
 import solara
 from matplotlib import pyplot as plt
 from mesa.visualization.utils import update_counter
+
 @solara.component
 def HistogramComponent(model, attribute, title, bins=10):
     """
@@ -75,7 +75,47 @@ model_params = {
         "type": "Checkbox",
         "value": False,
         "label": "Use LLM"
-    }
+    },
+    "c": {
+        "type": "SliderFloat",
+        "value": 0.05,
+        "label": "c param for knowledge distribution:",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+    },
+    "a_rep": {
+        "type": "SliderInt",
+        "value": 4,
+        "label": "a param for reputation distribution:",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+    },
+    "b_rep": {
+        "type": "SliderInt",
+        "value": 10,
+        "label": "b param for reputation distribution:",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+    },
+    "low_involv": {
+        "type": "SliderFloat",
+        "value": 0.0,
+        "label": "low param for involvement distribution:",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+    },
+    "high_involv": {
+        "type": "SliderFloat",
+        "value": 1.0,
+        "label": "high param for involvement distribution:",
+        "min": 0,
+        "max": 1,
+        "step": 0.01,
+    },
 }
 
 space_viz = make_space_component(

@@ -10,7 +10,7 @@ from graph_network import generate_graph
 from llm_config import LLM
 
 class OpinionModel(Model):
-    def __init__(self, num_agents=100, n_communities=3, use_llm=False):
+    def __init__(self, num_agents=100, n_communities=3, use_llm=False, c=0.05, a_rep=4, b_rep=10, low_involv=0.0, high_involv=1.0):
         super().__init__()
         self.num_agents = num_agents
         self.llm = LLM() if use_llm else None
@@ -29,12 +29,12 @@ class OpinionModel(Model):
         self.pos = nx.spring_layout(self.G, seed=42)
 
         for i, node in enumerate(self.G.nodes()):
-            knowledge = np.random.triangular(left=0, mode=0.05, right=1)
+            knowledge = np.random.triangular(left=0, mode=c, right=1)
             opinion = 0
             if use_llm:
                 agent = LLMOpinionAgent(self, knowledge, opinion, self.llm, self.fake_news, self.fact)
             else:
-                agent = OpinionAgent(self, knowledge, opinion)
+                agent = OpinionAgent(self, knowledge, opinion, a_rep, b_rep, low_involv, high_involv)
 
             if i == 30:
                 agent.opinion = 1

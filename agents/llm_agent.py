@@ -3,14 +3,14 @@ import random
 import numpy as np
 
 class OpinionAgent(Agent):
-    def __init__(self, model, knowledge, opinion, llm, fake_news, fact):
+    def __init__(self, model, knowledge, opinion, llm, fake_news, fact, a_rep=4, b_rep=10, low_involv=0.0, high_involv=1.0):
         super().__init__(model)
         self.knowledge = knowledge           # ki ∈ [0, 1]
         self.opinion = opinion               # oi ∈ {-1, 0, 1}
         self.opinion_raw = 0.0               # li (information load)
-        self.reputation = np.random.beta(a=4, b=10)  # ri ∈ [0.4, 1.0]
+        self.reputation = np.random.beta(a=a_rep, b=b_rep)  # ri ∈ [0.4, 1.0]
         self.involvement = 1.0               # ci
-        self.involvement_threshold = random.uniform(0.0, 1.0)  # cti
+        self.involvement_threshold = random.uniform(low_involv, high_involv)  # cti
         self.has_heard = False               # Controls involvement decay
         self.time_since_heard = 0
         self.llm = llm
