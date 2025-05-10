@@ -8,17 +8,17 @@ import matplotlib.pyplot as plt
 from graph_network import generate_graph
 
 class OpinionModel(Model):
-    def __init__(self, num_agents=100, avg_degree=3):
+    def __init__(self, num_agents=100, n_communities=3):
         super().__init__()
         self.num_agents = num_agents
-        self.G = generate_graph(num_agents, m_=avg_degree)
+        self.G = generate_graph(num_agents, m_=n_communities)
         self.grid = NetworkGrid(self.G)
         self.datacollector = DataCollector(
             model_reporters={
                 "Positive": lambda m: self.count_opinions(1),
                 "Negative": lambda m: self.count_opinions(-1),
-                "Neutral": lambda m: self.count_opinions(0)
-            }
+                "Neutral": lambda m: self.count_opinions(0),
+            },
         )
         self.iteration_counter = 0
         self.pos = nx.spring_layout(self.G, seed=42)
