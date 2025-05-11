@@ -1,57 +1,7 @@
 from mesa.visualization import SolaraViz, make_plot_component, make_space_component
-from model import OpinionModel
-import solara
-from matplotlib import pyplot as plt
-from mesa.visualization.utils import update_counter
-
-@solara.component
-def HistogramComponent(model, attribute, title, bins=10):
-    """
-    Generic histogram component for visualizing agent attributes.
-
-    Args:
-        model: The model instance.
-        attribute: The attribute of agents to visualize (e.g., 'reputation').
-        title: Title of the histogram.
-        bins: Number of bins for the histogram.
-    """
-    update_counter.get()
-    fig = plt.Figure()
-    ax = fig.subplots()
-    ax.set_xlim(0, 1)
-    values = [getattr(agent, attribute, None) for agent in model.agents]
-    ax.hist(values, bins=bins)
-    ax.set_title(title)
-    ax.set_xlabel(attribute.capitalize())
-    ax.set_ylabel("Frequency")
-    solara.FigureMatplotlib(fig)
-
-@solara.component
-def HistogramReputation(model):
-    return HistogramComponent(model, "reputation", "Reputation Histogram")
-
-@solara.component
-def HistogramKnowledge(model):
-    return HistogramComponent(model, "knowledge", "Knowledge Histogram")
-
-@solara.component
-def HistogramCommitment(model):
-    return HistogramComponent(model, "involvement_threshold", "Commitment Threshold Histogram")
-
-@solara.component
-def NetworkLegend(model):
-    """Displays a legend for the network visualization."""
-    with solara.Div(style={"padding": "10px", "border": "1px solid #ccc", "margin-top": "10px"}):
-        solara.Markdown("### Network Legend")
-        with solara.Row(style={"margin-bottom": "5px"}):
-            solara.Div(style={"width": "20px", "height": "20px", "background-color": "blue", "margin-right": "10px", "border-radius": "50%"})
-            solara.Text("Positive Opinion (P)")
-        with solara.Row( style={"margin-bottom": "5px"}):
-            solara.Div(style={"width": "20px", "height": "20px", "background-color": "orange", "margin-right": "10px", "border-radius": "50%"})
-            solara.Text("Negative Opinion (N)")
-        with solara.Row():
-            solara.Div(style={"width": "20px", "height": "20px", "background-color": "green", "margin-right": "10px", "border-radius": "50%"})
-            solara.Text("Neutral Opinion (Nu)")
+from environment.network_model import NetworkModel
+from visualization.histogram_component import HistogramReputation, HistogramKnowledge, HistogramCommitment
+from visualization.network_legend import NetworkLegend
 
 def agent_portrayal(agent):
     portrayal = {"size": 15,
@@ -142,7 +92,7 @@ plot_opinions = make_plot_component(
 )
 
 
-initial_model = OpinionModel(num_agents=model_params["num_agents"]["value"],
+initial_model = NetworkModel(num_agents=model_params["num_agents"]["value"],
                              n_communities=model_params["n_communities"]["value"],
                              use_llm=model_params["use_llm"]["value"])
 
@@ -157,7 +107,7 @@ page = SolaraViz(
         HistogramKnowledge,
         HistogramCommitment,
     ],
-    name="Opinion Model Visualization",
+    name="Social Network Visualization",
 )
 
 if __name__ == "__main__":
