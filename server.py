@@ -1,11 +1,15 @@
 from mesa.visualization import SolaraViz, make_plot_component, make_space_component
 from environment.network_model import NetworkModel
-from visualization.histogram_component import HistogramReputation, HistogramKnowledge, HistogramCommitment
+from visualization.histogram_component import (
+    HistogramReputation,
+    HistogramKnowledge,
+    HistogramCommitment,
+)
 from visualization.network_legend import NetworkLegend
 
+
 def agent_portrayal(agent):
-    portrayal = {"size": 15,
-                 "text_color": "black"}
+    portrayal = {"size": 15, "text_color": "black"}
 
     if agent.opinion == 1:
         portrayal["color"] = "blue"
@@ -36,11 +40,7 @@ model_params = {
         "max": 10,
         "step": 1,
     },
-    "use_llm": {
-        "type": "Checkbox",
-        "value": False,
-        "label": "Use LLM"
-    },
+    "use_llm": {"type": "Checkbox", "value": False, "label": "Use LLM"},
     "c": {
         "type": "SliderFloat",
         "value": 0.05,
@@ -87,14 +87,14 @@ space_viz = make_space_component(
     agent_portrayal=agent_portrayal,
 )
 
-plot_opinions = make_plot_component(
-    measure=["Positive", "Negative", "Neutral"]
+plot_opinions = make_plot_component(measure=["Positive", "Negative", "Neutral"])
+
+
+initial_model = NetworkModel(
+    num_agents=model_params["num_agents"]["value"],
+    n_communities=model_params["n_communities"]["value"],
+    use_llm=model_params["use_llm"]["value"],
 )
-
-
-initial_model = NetworkModel(num_agents=model_params["num_agents"]["value"],
-                             n_communities=model_params["n_communities"]["value"],
-                             use_llm=model_params["use_llm"]["value"])
 
 page = SolaraViz(
     model=initial_model,
